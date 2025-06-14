@@ -1,9 +1,6 @@
 const eventModel = require('../../models/eventModel');
 const ticketModel = require('../../models/ticketModel');
 
-// @desc Admin dashboard summary
-// @route GET /api/admin/dashboard
-// @access Private (Admin)
 const getAdminHomeStatsFunction = async (req, res) => {
     try {
         const totalEvents = await eventModel.countDocuments({});
