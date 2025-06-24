@@ -34,7 +34,7 @@ const signupFunction = async (req, res) => {
 
 const loginFunction = async (req, res) => {
     const { email, password } = req.body;
-
+    console.log("login function called", email, password)
     try {
         // Check if user exists
         const user = await userModel.findOne({ email });
@@ -60,7 +60,9 @@ const loginFunction = async (req, res) => {
         return res.status(200).json({ 
             userId: user._id, 
             token, 
-            message: "Login successful!" 
+            message: "Login successful!",
+            firstName: user.firstName,
+            lastName: user.lastName
         });
     } catch (error) {
         console.error("Login error:", error);

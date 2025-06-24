@@ -10,7 +10,6 @@ const { startEventStatusUpdater } = require("./jobs/eventStatusUpdater");
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    // origin: process.env.CLIENT_URL || "http://localhost:3000",
     origin: '*', // Allow all
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

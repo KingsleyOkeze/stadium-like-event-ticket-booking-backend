@@ -24,7 +24,7 @@ const userAuth = async (req, res, next) => {
     }
 
     console.log('decoded is', decoded)
-    const user_id = decoded.userId;; // Extract user ID from decoded token
+    const user_id = decoded.userId; // Extract user ID from decoded token
 
     const user = await userModel.findById(user_id);
     if (!user) {
