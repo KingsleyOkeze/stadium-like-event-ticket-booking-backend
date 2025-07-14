@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
-const userModel = require("../models/userModel");
+const userModel = require("../models/studentModel");
 require("dotenv").config();
 
 const jwt_secret = process.env.JWT_SECRET_KEY;
 
-const userAuth = async (req, res, next) => {
+const studentAuth = async (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
     console.log('Authorization header:', authHeader);
@@ -31,7 +31,7 @@ const userAuth = async (req, res, next) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if (user.role !== "User") {
+    if (user.role !== "Student") {
       return res.status(403).json({ error: "Access forbidden: Not a user" });
     }
 
@@ -45,4 +45,4 @@ const userAuth = async (req, res, next) => {
   }
 };
 
-module.exports = userAuth;
+module.exports = studentAuth;

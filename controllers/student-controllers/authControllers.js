@@ -1,39 +1,42 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const adminModel = require("../../models/adminModel");
+const studentModel = require("../../models/studentModel");
 
 const signupFunction = async (req, res) => {
-    const { name, email, department, password } = req.body;
-    console.log("Sign up details:", name, email, department, password);
+    const { firstName, lastName, email, department, password } = req.body;
+    console.log("Sign up details:", firstName, lastName, email, department, password);
 
     try {
-        if (!name || !email || !department || !password) {
+        if (!firstName || !lastName || !email || !department || !password) {
             return res.status(400).json({ error: "All fields are required!" });
         }
 
-        const existingAdmin = await adminModel.findOne({ email });
-        if (existingAdmin) {
-            return res.status(400).json({ error: "Admin already exists!" });
+        // Check if student already exists
+        const existingStudent = await studentModel.findOne({ email });
+        if (existingStudent) {
+            return res.status(400).json({ error: "Student already exists!" });
         }
 
+        // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newAdmin = new adminModel({
-            name,
+        // Create new student
+        const newStudent = new studentModel({
+            name: `${firstName} ${lastName}`,
             email,
             department,
             password: hashedPassword,
-            role: "Admin"
+            role: "Student"
         });
 
-        await newAdmin.save();
+        await newStudent.save();
 
         return res.status(201).json({
-            message: "Admin registered successfully!",
-            adminId: newAdmin._id,
-            name: newAdmin.name,
-            department: newAdmin.department
+            message: "Student registered successfully!",
+            studentId: newStudent._id,
+            name: newStudent.name,
+            department: newStudent.department
         });
     } catch (error) {
         console.error("Signup error:", error);
@@ -42,37 +45,43 @@ const signupFunction = async (req, res) => {
 };
 
 
+
 const loginFunction = async (req, res) => {
     const { email, password } = req.body;
+    console.log("Login attempt:", email);
 
     try {
-        const admin = await adminModel.findOne({ email });
-        if (!admin) {
-            return res.status(404).json({ error: "Admin does not exist!" });
+        const student = await studentModel.findOne({ email });
+        if (!student) {
+            return res.status(404).json({ error: "Student does not exist!" });
         }
 
-        const isMatch = await bcrypt.compare(password, admin.password);
+        const isMatch = await bcrypt.compare(password, student.password);
         if (!isMatch) {
             return res.status(401).json({ error: "Invalid credentials!" });
         }
 
-        if (admin.role !== "Admin") {
-            return res.status(403).json({ error: "User must be an admin to login!" });
+        if (student.role !== "Student") {
+            return res.status(403).json({ error: "User must be a student to login!" });
         }
 
+        // Generate token
         const token = jwt.sign(
             {
-                userId: admin._id,
-                role: admin.role
+                userId: student._id,
+                role: student.role
             },
             process.env.JWT_SECRET_KEY,
-            { expiresIn: "1h" }
+            { expiresIn: "7d" }
         );
 
         return res.status(200).json({
             message: "Login successful!",
             token,
-            userId: admin._id
+            studentId: student._id,
+            name: student.name,
+            email: student.email,
+            department: student.department
         });
     } catch (error) {
         console.error("Login error:", error);

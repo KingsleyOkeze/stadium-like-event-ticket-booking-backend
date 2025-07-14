@@ -1,16 +1,14 @@
 const mongoose = require('mongoose');
 
-const adminSchema = new mongoose.Schema({
+const studentSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     department: { type: String, required: true },
     password: { type: String, required: true, minlength: 6 },
-    role: { type: String, default: 'Admin' },
+    role: { type: String, default: 'Student' },
     createdAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 
+const studentModel = mongoose.model('Student', studentSchema);
 
-
-const adminModel = mongoose.model('admins', adminSchema);
-
-module.exports = adminModel;
+module.exports = studentModel;
